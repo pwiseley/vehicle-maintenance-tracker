@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using VehicleMaintenanceTracker.Dtos.Maintenance;
-using VehicleMaintenanceTracker.Dtos.Vehicle;
+using VehicleMaintenanceTracker.Dtos.Vehicles;
 using VehicleMaintenanceTracker.Services.Interfaces;
 
 namespace VehicleMaintenanceTracker.Controllers;

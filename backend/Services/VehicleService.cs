@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using VehicleMaintenanceTracker.Data;
-using VehicleMaintenanceTracker.Dtos.Vehicle;
+using VehicleMaintenanceTracker.Dtos.Vehicles;
 using VehicleMaintenanceTracker.Exceptions;
 using VehicleMaintenanceTracker.Services.Interfaces;
 

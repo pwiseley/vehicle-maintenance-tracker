@@ -1,4 +1,4 @@
-using VehicleMaintenanceTracker.Dtos.Vehicle;
+using VehicleMaintenanceTracker.Dtos.Vehicles;
 
 namespace VehicleMaintenanceTracker.Services.Interfaces;
 
