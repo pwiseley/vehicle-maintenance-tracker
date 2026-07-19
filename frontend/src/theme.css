@@ -346,6 +346,19 @@ nav.mob a.active {
 .b-InProgress { background: var(--prog); }
 .b-Completed { background: var(--done); }
 
+.badge-clickable {
+    transition: opacity 0.12s, transform 0.12s;
+}
+
+.badge-clickable:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+
+.badge-st:disabled {
+    cursor: default;
+}
+
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
