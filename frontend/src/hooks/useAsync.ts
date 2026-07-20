@@ -23,7 +23,7 @@ export function useAsync<T>(fetcher: () => Promise<T>, deps: unknown[] = []) {
           err instanceof ApiError ? err.message : "Something went wrong. Please try again.";
         setState({ data: null, loading: false, error: message });
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   }, deps);
 
   useEffect(() => {
