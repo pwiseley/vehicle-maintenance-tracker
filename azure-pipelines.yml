@@ -1,19 +1,109 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
-- main
+  branches:
+    include:
+      - main
 
-pool:
-  vmImage: ubuntu-latest
+variables:
+  azureServiceConnection: 'azure-vmt-connection'
+  resourceGroup: 'vehicle-maintenance-rg'
+  acrName: 'vmtregistry'
+  acrLoginServer: 'vmtregistry.azurecr.io'
+  backendImage: 'vmt-backend'
+  frontendImage: 'vmt-frontend'
+  backendApp: 'vmt-backend'
+  frontendApp: 'vmt-frontend'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+stages:
+  - stage: BuildAndLint
+    displayName: 'Build and Lint'
+    jobs:
+      - job: Backend
+        displayName: 'Backend - build and lint'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Install .NET SDK'
+            inputs:
+              packageType: 'sdk'
+              version: '10.0.x'
+          - script: dotnet restore
+            workingDirectory: backend
+            displayName: 'Restore'
+          - script: dotnet format --verify-no-changes
+            workingDirectory: backend
+            displayName: 'Lint (dotnet format)'
+          - script: dotnet build --configuration Release --no-restore
+            workingDirectory: backend
+            displayName: 'Build'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+      - job: Frontend
+        displayName: 'Frontend - build and lint'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: NodeTool@0
+            displayName: 'Install Node'
+            inputs:
+              versionSpec: '20.x'
+          - script: npm install
+            workingDirectory: frontend
+            displayName: 'Install deps'
+          - script: npm run lint
+            workingDirectory: frontend
+            displayName: 'Lint (ESLint)'
+          - script: npm run build
+            workingDirectory: frontend
+            displayName: 'Build'
+
+  - stage: BuildImages
+    displayName: 'Build and push images'
+    dependsOn: BuildAndLint
+    jobs:
+      - job: Images
+        displayName: 'Build images in ACR'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureCLI@2
+            displayName: 'Build backend image'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az acr build --registry $(acrName) --image $(backendImage):$(Build.BuildId) --image $(backendImage):latest --file backend/Dockerfile backend
+          - task: AzureCLI@2
+            displayName: 'Build frontend image'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az acr build --registry $(acrName) --image $(frontendImage):$(Build.BuildId) --image $(frontendImage):latest --file frontend/Dockerfile frontend
+
+  - stage: Deploy
+    displayName: 'Deploy to Container Apps'
+    dependsOn: BuildImages
+    jobs:
+      - job: Deploy
+        displayName: 'Update Container Apps'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: AzureCLI@2
+            displayName: 'Deploy backend'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az containerapp update --name $(backendApp) --resource-group $(resourceGroup) --image $(acrLoginServer)/$(backendImage):$(Build.BuildId)
+          - task: AzureCLI@2
+            displayName: 'Deploy frontend'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az containerapp update --name $(frontendApp) --resource-group $(resourceGroup) --image $(acrLoginServer)/$(frontendImage):$(Build.BuildId)
