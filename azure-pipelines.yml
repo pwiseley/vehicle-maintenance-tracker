@@ -56,9 +56,41 @@ stages:
             workingDirectory: frontend
             displayName: 'Build'
 
+  - stage: Test
+    displayName: 'Test'
+    dependsOn: BuildAndLint
+    jobs:
+      - job: BackendTests
+        displayName: 'Backend - tests (xUnit + Testcontainers)'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Install .NET SDK'
+            inputs:
+              packageType: 'sdk'
+              version: '10.0.x'
+          - script: dotnet restore
+            workingDirectory: backend.Tests
+            displayName: 'Restore'
+          - script: >
+              dotnet test
+              --configuration Release
+              --logger trx
+              --results-directory $(Agent.TempDirectory)/test-results
+            workingDirectory: backend.Tests
+            displayName: 'Run tests'
+          - task: PublishTestResults@2
+            displayName: 'Publish test results'
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'VSTest'
+              testResultsFiles: '$(Agent.TempDirectory)/test-results/**/*.trx'
+              failTaskOnFailedTests: true
+
   - stage: BuildImages
     displayName: 'Build and push images'
-    dependsOn: BuildAndLint
+    dependsOn: Test
     jobs:
       - job: Images
         displayName: 'Build images in ACR'
