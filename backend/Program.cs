@@ -42,3 +42,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+
+// Exposes the implicit Program class to the test project so
+// WebApplicationFactory<Program> can bootstrap the API in-memory.
+// See: https://learn.microsoft.com/aspnet/core/test/integration-tests
+public partial class Program { }
