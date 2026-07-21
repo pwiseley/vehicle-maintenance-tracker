@@ -11,3 +11,7 @@ Thumbs.db
 # Environment variables
 .env
 .env.local
+
+# .NET build output (any project)
+[Bb]in/
+[Oo]bj/
