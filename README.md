@@ -1,42 +1,42 @@
 # Vehicle Maintenance Tracker
 
+[Lire en français](README.FR.md)
+
 Fleet maintenance tracking API: logs service history per vehicle, tracks maintenance status, and surfaces fleet-wide metrics through a dashboard endpoint.
 
 > [Live Demo](https://vmt.petiton.dev)
 
-## Overview
-
-Fleet operators can register vehicles, log maintenance interventions against them, and follow each intervention through a status workflow (scheduled → in progress → completed). A dashboard endpoint aggregates fleet-wide metrics: total maintenance cost, upcoming interventions, and status distribution.
-
-The backend is a containerized ASP.NET Core API with a React frontend, deployed on Azure Container Apps behind an nginx reverse proxy. An Azure DevOps pipeline builds, lints, tests, and deploys on every push to `main`.
+## Contents
+- [Tech Stack](#tech-stack)
+- [Features](#features)
+- [API](#api)
+- [Deployment](#deployment)
+- [Related](#related)
 
 ## Tech Stack
 
 | Layer | Technology |
 |---|---|
-| Backend | C#, ASP.NET Core 10, Entity Framework Core |
-| Frontend | React, TypeScript, Vite |
-| Database | PostgreSQL 16 |
-| Testing | xUnit, Testcontainers, Respawn, FluentAssertions |
-| CI/CD | Azure DevOps Pipelines |
-| Hosting | Azure Container Apps, Azure Container Registry, nginx |
-| Architecture | Controller / Service / DbContext |
+| **Backend** | C#, ASP.NET Core 10, Entity Framework Core |
+| **Frontend** | React, TypeScript, Vite |
+| **Database** | PostgreSQL 16 |
+| **Testing** | xUnit, Testcontainers, Respawn, FluentAssertions |
+| **CI/CD** | Azure DevOps Pipelines |
+| **Hosting** | Azure Container Apps, Azure Container Registry, nginx |
+| **Architecture** | Controller / Service / DbContext |
 
 ## Features
 
-- Vehicle registry with type classification (car, truck, snow plow, service vehicle)
-- Maintenance history per vehicle with cost and mileage tracking
-- Status workflow for each maintenance record
-- Dashboard endpoint with LINQ-based aggregations
-- REST API documented with Swagger / OpenAPI
-- EF Core migrations for versioned schema changes
-- Global exception handling with RFC 7807 ProblemDetails responses
-
-## Testing
-
-Integration tests run against a real PostgreSQL instance through Testcontainers. Migrations are applied to a disposable database, and Respawn resets state between tests. Assertions use FluentAssertions.
+- **Vehicle registry** with type classification (car, truck, snow plow, service vehicle)
+- **Maintenance history** per vehicle with cost and mileage tracking
+- **Status workflow** for each maintenance record
+- **Dashboard endpoint** with **LINQ**-based aggregations
+- **REST API** documented with **Swagger / OpenAPI**
+- **EF Core migrations** for versioned schema changes
+- **Global exception handling** with RFC 7807 **ProblemDetails** responses
 
 ## API
+
 > [API Docs (Swagger)](https://vmt.petiton.dev/swagger)
 
 | Method | Route | Purpose |
@@ -49,7 +49,7 @@ Integration tests run against a real PostgreSQL instance through Testcontainers.
 | `PATCH` | `/api/maintenance/{id}/status` | Advance maintenance status |
 | `GET` | `/api/dashboard` | Fleet-wide metrics |
 
-Example: registering a vehicle with a plate number that already exists returns `409 Conflict` in ProblemDetails format.
+Registering a vehicle with a plate number that already exists returns `409 Conflict` in **ProblemDetails** format:
 
 ```json
 {
@@ -61,7 +61,7 @@ Example: registering a vehicle with a plate number that already exists returns `
 
 ## Deployment
 
-Images are built by the Azure DevOps pipeline, stored in Azure Container Registry, and deployed to Azure Container Apps.
+Images are built by the **Azure DevOps** pipeline, stored in **Azure Container Registry**, and deployed to **Azure Container Apps**.
 
 ![Azure Container Apps overview](docs/images/azure-container-apps.png)
 
