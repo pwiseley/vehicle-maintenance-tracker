@@ -8,7 +8,6 @@ Fleet maintenance tracking API: logs service history per vehicle, tracks mainten
 
 ## Contents
 - [Tech Stack](#tech-stack)
-- [Features](#features)
 - [API](#api)
 - [Deployment](#deployment)
 - [Related](#related)
@@ -24,16 +23,6 @@ Fleet maintenance tracking API: logs service history per vehicle, tracks mainten
 | **CI/CD** | Azure DevOps Pipelines |
 | **Hosting** | Azure Container Apps, Azure Container Registry, nginx |
 | **Architecture** | Controller / Service / DbContext |
-
-## Features
-
-- **Vehicle registry** with type classification (car, truck, snow plow, service vehicle)
-- **Maintenance history** per vehicle with cost and mileage tracking
-- **Status workflow** for each maintenance record
-- **Dashboard endpoint** with **LINQ**-based aggregations
-- **REST API** documented with **Swagger / OpenAPI**
-- **EF Core migrations** for versioned schema changes
-- **Global exception handling** with RFC 7807 **ProblemDetails** responses
 
 ## API
 
